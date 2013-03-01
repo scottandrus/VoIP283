@@ -1,3 +1,8 @@
+// TODO: Microphone probably reads in at a different rate that the speaker can 
+//       read out. If so, read in microphone.getBufferSize() bytes and output
+//       only the min( microphone.getBufferSize(), speaker.getBufferSize() )
+//       bytes. This way we will always get the latest noises from the mic
+//       rather than letting them build up in the queue.
 
 import javax.sound.sampled.*;
 
