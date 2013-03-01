@@ -31,8 +31,8 @@ public class LoopbackTest{
 		}
 
 		// Clean up
-//		microphone.start();
-//		speaker.start();
+//		microphone.stop();
+//		speaker.stop();
 
 	}
 }
