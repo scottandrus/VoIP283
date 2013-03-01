@@ -1,10 +1,6 @@
-// TODO: Microphone probably reads in at a different rate that the speaker can 
-//       read out. If so, read in microphone.getBufferSize() bytes and output
-//       only the min( microphone.getBufferSize(), speaker.getBufferSize() )
-//       bytes. This way we will always get the latest noises from the mic
-//       rather than letting them build up in the queue.
 
 import javax.sound.sampled.*;
+import java.lang.Math;
 
 public class LoopbackTest{
 	
@@ -24,7 +20,11 @@ public class LoopbackTest{
 		speaker.open(format);
 
 		int numBytesRead;
-		byte[] data = new byte[microphone.getBufferSize() / 5];
+
+		// Read in the entire buffer to ensure we don't build up 
+		// data in the TargetDataLine buffer, causing the mic to make
+		// clicking noises.
+		byte[] data = new byte[microphone.getBufferSize()];
 
 		// Start sending/receiving data
 		microphone.start();
@@ -32,7 +32,10 @@ public class LoopbackTest{
 
 		while (true){
 			numBytesRead = microphone.read(data, 0, data.length);
-			speaker.write(data, 0, numBytesRead);
+
+			// we take the min here to ensure that we don't write more to the speaker
+			// than the speaker can output per iteration.
+			speaker.write(data, 0, Math.min( numBytesRead, speaker.getBufferSize()) );
 		}
 
 		// Clean up
