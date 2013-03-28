@@ -26,15 +26,23 @@ public class Client {
 	//		call init with proper info
 	// 		contains main event loop
 	//			think about threads for sending out and receiving data
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) throws Exception {
 		if (args.length != 3){
 			// wrong number of input
 			// should be <sender/receiver?> <IP> <PortNo>
 			
 			// or should it be all information (and filler info if
 			//				   it should only be one or the other?)
+			// i.e. <sender> <IP> <PortNo> <receiver> <IP> <PortNo> ?
+			// 		where sender & receiver are denoted as 1/0, if 1
+			//				then the two strings after have legitimate info
+			// 				if 0, ignore the next two fields
 		}
-	}
+	}*/
+	
+	
+	// remember to use threads for sending/receiving to ensure that they're
+	//		happening simultaneously
 	
 	
 
