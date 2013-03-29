@@ -28,6 +28,13 @@ public class DataOut {
 	}
 	
 	
+	//speaker.write(data, 0, Math.min( numBytesRead, speaker.getBufferSize()) );
+	public void write(int numBytesRead){
+		speakers.write(speakerData, 0, Math.min( numBytesRead, speakers.getBufferSize()));
+	}
+	
+	
+	
 	// is there anything else we should do before stopping or starting?
 	public void startSpeakers(){
 		speakers.start();

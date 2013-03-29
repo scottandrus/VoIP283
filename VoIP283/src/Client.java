@@ -1,8 +1,7 @@
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Properties;
 
 /**
@@ -38,18 +37,39 @@ public class Client {
 		
 		//configure datain/out first
 		input = new DataIn();
+		input.startMic();
 		output = new DataOut();
-		
+		output.startSpeakers();
 		
 		sender = new Sender(serverIP, clientIP, 0); // 0 for PortNo allows for computer to
 													// dynamically choose a port
-		
+		ByteArrayOutputStream ostream = sender.sendData();
 		// byte[] buf,InetAddress serverIP, InetAddress remoteAddr, int PortNo
 		receiver = new Receiver(output.speakerData,serverIP,clientIP,0);
-		
+		ByteArrayInputStream istream = receiver.recvData();
 		
 		
 		// need a thread to read and a thread to write
+		
+		// what buffer is going where and why?
+		// DataIn buffer should go to sender (to be sent)
+		//		read from mic, write from sender
+		// DataOut buffer should go to receiver (to be filled)
+		//		read from receiver, write from speakers
+		
+		
+		while(true){
+			// EVENTUALLY
+			// have one thread reading in from mic
+			// another waiting for stuff to write
+			int numBytesRead = input.read();
+			byte[] buf = input.getNextArray();
+			ostream.write(buf,0,buf.length);
+			
+			istream.read(output.speakerData,0,output.speakerData.length);
+			output.write(numBytesRead);
+			
+		}
 	}
 	
 	

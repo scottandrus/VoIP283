@@ -19,7 +19,7 @@ import javax.sound.sampled.TargetDataLine;
 
 public class DataIn {
 	private TargetDataLine microphone;
-	public byte[] micData;
+	private byte[] micData;
 	
 	// ctor
 	public DataIn(){
@@ -37,6 +37,22 @@ public class DataIn {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	// should there be a buffer for data that hasn't been sent in time?
+	
+	//numBytesRead = microphone.read(data, 0, data.length);
+	public int read(){
+		int numBytesRead = microphone.read(micData, 0, micData.length);
+		return numBytesRead;
+	}
+	
+	
+	public byte[] getNextArray(){
+		// gives the most recent byte[] to send out (if there is one);
+		return micData;
+	}
+	
 	
 	
 	// are there any checks we need to do before starting or stopping?
