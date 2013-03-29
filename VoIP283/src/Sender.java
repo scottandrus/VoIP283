@@ -27,6 +27,10 @@ import java.net.UnknownHostException;
  */
 
 
+// changed ctor
+
+
+
 public class Sender {
 	OutStream ostream;
 	final static int MAXBUFSIZE = 1025;
@@ -37,11 +41,11 @@ public class Sender {
 		
 		
 		// ----------------------- CONSTRUCTOR --------------------------------
-		public OutStream(InetAddress serverIP, int serverPort,InetAddress remoteAddr, int remotePort) {
+		public OutStream(InetAddress serverIP, InetAddress remoteAddr, int PortNo) {
 			super();
 			try {
-				dsocket = new DatagramSocket(serverPort,serverIP);
-				dsocket.connect(remoteAddr,remotePort);
+				dsocket = new DatagramSocket(PortNo,serverIP);
+				dsocket.connect(remoteAddr,PortNo);
 			} catch (SocketException e) {
 				e.printStackTrace();
 			}
@@ -97,13 +101,9 @@ public class Sender {
 	
 	
 	// set up datagram socket
-	public Sender(InetAddress serverIP, int serverPort) {
-		try {
-			InetAddress remoteAddr = InetAddress.getByName("10.1.5.2");
-			ostream = new OutStream(serverIP,serverPort,remoteAddr,serverPort);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+	public Sender(InetAddress serverIP, InetAddress clientIP, int PortNo) {
+		ostream = new OutStream(serverIP,clientIP,PortNo);
+
 		
 	}
 	

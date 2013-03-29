@@ -14,7 +14,7 @@ import javax.sound.sampled.SourceDataLine;
  */
 public class DataOut {
 	private SourceDataLine speakers;
-	private byte[] speakerData;
+	public byte[] speakerData; // <--- is this ok?  Should DataOut be internal to client?
 	
 	public DataOut(){
 		try {

@@ -1,3 +1,10 @@
+import java.io.FileInputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Properties;
+
 /**
  * 
  * @author Jenna
@@ -6,43 +13,44 @@
  * 		  a DataIn and DataOut object that has been initialized
  * 		  correctly for the machine the client is on
  * 
- * (This is our main, the core for pure communication between
- * 	     two clients)
  *
  */
 public class Client {
-	private Sender sender;
-	private Receiver receiver;
-	private DataIn input;
-	private DataOut output;
+	private static Sender sender;
+	private static Receiver receiver;
+	private static DataIn input;
+	private static DataOut output;
 	
-	// init -- properly set up all private variables
-	// have 2 separate ones for sender / dataIn & receiver / dataOut ?
-	public void initSender(){
+	private static InetAddress clientIP;
+	private static InetAddress serverIP;
+	
+
+	
+	// main -- initialize all data
+
+	public static void main(String[] args) throws Exception {
+		// get all information from a config file
+		// config file contains: SERVER_IP, CLIENT_IP, (and what else?)
+		Properties prop = new Properties();
+		prop.load(new FileInputStream("config.properties"));
+		clientIP = InetAddress.getByName(prop.getProperty("CLIENT_IP"));
+		serverIP = InetAddress.getByName(prop.getProperty("SERVER_IP"));
 		
+		//configure datain/out first
+		input = new DataIn();
+		output = new DataOut();
+		
+		
+		sender = new Sender(serverIP, clientIP, 0); // 0 for PortNo allows for computer to
+													// dynamically choose a port
+		
+		// byte[] buf,InetAddress serverIP, InetAddress remoteAddr, int PortNo
+		receiver = new Receiver(output.speakerData,serverIP,clientIP,0);
+		
+		
+		
+		// need a thread to read and a thread to write
 	}
-	
-	// main w/ info from cmd line
-	//		call init with proper info
-	// 		contains main event loop
-	//			think about threads for sending out and receiving data
-	/*public static void main(String[] args) throws Exception {
-		if (args.length != 3){
-			// wrong number of input
-			// should be <sender/receiver?> <IP> <PortNo>
-			
-			// or should it be all information (and filler info if
-			//				   it should only be one or the other?)
-			// i.e. <sender> <IP> <PortNo> <receiver> <IP> <PortNo> ?
-			// 		where sender & receiver are denoted as 1/0, if 1
-			//				then the two strings after have legitimate info
-			// 				if 0, ignore the next two fields
-		}
-	}*/
-	
-	
-	// remember to use threads for sending/receiving to ensure that they're
-	//		happening simultaneously
 	
 	
 

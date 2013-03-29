@@ -27,6 +27,10 @@ import java.net.UnknownHostException;
  *
  */
 
+
+// what buffer are we sending into this to be filled? Speaker's buffer?
+
+
 public class Receiver {
 	InStream istream;
 	final static int MAXBUFSIZE = 1025;
@@ -35,13 +39,13 @@ public class Receiver {
 	public class InStream extends ByteArrayInputStream{
 		DatagramSocket dsocket;
 		byte lastSequence;
-
+		
 		// ---------------------- CONSTRUCTOR ---------------------------------
-		public InStream(byte[] buf,InetAddress serverIP, int serverPort,InetAddress remoteAddr, int remotePort) {
+		public InStream(byte[] buf,InetAddress serverIP, InetAddress remoteAddr, int PortNo) {
 			super(buf);
 			try {
-				dsocket = new DatagramSocket(serverPort,serverIP);
-				dsocket.connect(remoteAddr,remotePort);
+				dsocket = new DatagramSocket(PortNo,serverIP);
+				dsocket.connect(remoteAddr,PortNo);
 			} catch (SocketException e) {
 				e.printStackTrace();
 			}
@@ -104,14 +108,8 @@ public class Receiver {
 	
 	
 	
-	public Receiver(InetAddress serverIP, int serverPort) {
-		try {
-			byte [] buf = new byte[MAXBUFSIZE];
-			InetAddress remoteAddr = InetAddress.getByName("10.1.5.3");
-			istream = new InStream(buf,serverIP,serverPort,remoteAddr,serverPort);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+	public Receiver(byte[] buf, InetAddress serverIP, InetAddress clientIP, int serverPort) {
+		istream = new InStream(buf,serverIP,clientIP,serverPort);
 	}
 
 	public ByteArrayInputStream recvData() {
