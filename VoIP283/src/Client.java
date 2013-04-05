@@ -72,7 +72,6 @@ public class Client
 				System.out.println("Didn't receive anything");
 			}
 			
-			System.out.println("Received");
 			output.write(dp.getData(), 0, dp.getLength());
 			
 		}
