@@ -19,13 +19,14 @@ import javax.sound.sampled.TargetDataLine;
 
 public class DataIn {
 	private TargetDataLine microphone;
+	private int lastNumBytesRead;
 	private byte[] micData;
 	
 	// ctor
 	public DataIn(){
 		try {
 
-			//							sampl Rate & bits, #Channels, signed?, bigEndian?
+			// sampl Rate & bits, #Channels, signed?, bigEndian?
 			AudioFormat format = new AudioFormat(16000.0f, 16, 1, true, true);
 			microphone = AudioSystem.getTargetDataLine(format);
 			micData = new byte[microphone.getBufferSize()];
@@ -43,16 +44,19 @@ public class DataIn {
 	
 	//numBytesRead = microphone.read(data, 0, data.length);
 	public int read(){
-		int numBytesRead = microphone.read(micData, 0, micData.length);
-		return numBytesRead;
+		lastNumBytesRead = microphone.read(micData, 0, micData.length);
+		return lastNumBytesRead;
 	}
-	
+
+	// Returns the number of valid bytes in the buffer
+	public int getByteRead(){
+		return lastNumBytesRead;
+	}
 	
 	public byte[] getNextArray(){
 		// gives the most recent byte[] to send out (if there is one);
 		return micData;
 	}
-	
 	
 	
 	// are there any checks we need to do before starting or stopping?
@@ -64,42 +68,4 @@ public class DataIn {
 		microphone.stop();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
