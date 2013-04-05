@@ -1,11 +1,6 @@
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.lang.Math;
-import java.net.InetAddress;
-import java.net.DatagramSocket;
-import java.net.DatagramPacket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.Properties;
 
 /**
@@ -18,7 +13,8 @@ import java.util.Properties;
  * 
  *
  */
-public class Client {
+public class Client 
+{
 	private static DataIn input;
 	private static DataOut output;
 	
@@ -59,7 +55,7 @@ public class Client {
 			dp.setPort(PORT);
 
 			// As Lum noted, we will probably need to throttle this 
-			// to some extent with recieve calls to prevent congestion
+			// to some extent with receive calls to prevent congestion
 			
 			// for (each of our clients)
 				dp.setAddress(clientIP);
@@ -76,6 +72,7 @@ public class Client {
 				System.out.println("Didn't receive anything");
 			}
 			
+			System.out.println("Received");
 			output.write(dp.getData(), 0, dp.getLength());
 			
 		}
@@ -83,4 +80,5 @@ public class Client {
 //		input.stopMic();
 //		output.stopSpeakers();
 	}
+
 }
