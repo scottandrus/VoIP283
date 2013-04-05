@@ -14,13 +14,11 @@ import javax.sound.sampled.SourceDataLine;
  */
 public class DataOut {
 	private SourceDataLine speakers;
-	public byte[] speakerData; // <--- is this ok?  Should DataOut be internal to client?
 	
 	public DataOut(){
 		try {
 			AudioFormat format = new AudioFormat(16000.0f, 16, 1, true, true);
 			speakers = AudioSystem.getSourceDataLine(format);
-			speakerData = new byte[speakers.getBufferSize()];
 		} catch (LineUnavailableException e) {
 			// TODO Handle if the speakers are unavailable
 			e.printStackTrace();
@@ -29,8 +27,11 @@ public class DataOut {
 	
 	
 	//speaker.write(data, 0, Math.min( numBytesRead, speaker.getBufferSize()) );
-	public void write(int numBytesRead){
-		speakers.write(speakerData, 0, Math.min( numBytesRead, speakers.getBufferSize()));
+	public void write(byte[] data, int offset, int numBytesRead){
+		speakers.write(
+				data, 
+				offset, 
+				Math.min( numBytesRead, speakers.getBufferSize()));
 	}
 	
 	

@@ -1,7 +1,11 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.lang.Math;
 import java.net.InetAddress;
+import java.net.DatagramSocket;
+import java.net.DatagramPacket;
+import java.net.SocketTimeoutException;
 import java.util.Properties;
 
 /**
@@ -15,17 +19,15 @@ import java.util.Properties;
  *
  */
 public class Client {
-	private static Sender sender;
-	private static Receiver receiver;
 	private static DataIn input;
 	private static DataOut output;
 	
+	// constant port number that our program will broadcast to.
+	private static final int PORT = 8000;
+	private static final int MAXBUFSIZE = 1024;
+	
 	private static InetAddress clientIP;
 	private static InetAddress serverIP;
-	
-
-	
-	// main -- initialize all data
 
 	public static void main(String[] args) throws Exception {
 		// get all information from a config file
@@ -37,41 +39,48 @@ public class Client {
 		
 		//configure datain/out first
 		input = new DataIn();
-		input.startMic();
 		output = new DataOut();
+		
+		DatagramSocket socket = new DatagramSocket(PORT);
+		
+		input.startMic();
 		output.startSpeakers();
-		
-		sender = new Sender(serverIP, clientIP, 0); // 0 for PortNo allows for computer to
-													// dynamically choose a port
-		ByteArrayOutputStream ostream = sender.sendData();
-		// byte[] buf,InetAddress serverIP, InetAddress remoteAddr, int PortNo
-		receiver = new Receiver(output.speakerData,serverIP,clientIP,0);
-		ByteArrayInputStream istream = receiver.recvData();
-		
-		
-		// need a thread to read and a thread to write
-		
-		// what buffer is going where and why?
-		// DataIn buffer should go to sender (to be sent)
-		//		read from mic, write from sender
-		// DataOut buffer should go to receiver (to be filled)
-		//		read from receiver, write from speakers
-		
-		
+
 		while(true){
-			// EVENTUALLY
-			// have one thread reading in from mic
-			// another waiting for stuff to write
+
+			// 1) Send all IPs the first chunk of input data.
 			int numBytesRead = input.read();
 			byte[] buf = input.getNextArray();
-			ostream.write(buf,0,buf.length);
+
+			DatagramPacket dp = new DatagramPacket(
+					buf,  
+					Math.min(MAXBUFSIZE, numBytesRead));
+					
+			dp.setPort(PORT);
+
+			// As Lum noted, we will probably need to throttle this 
+			// to some extent with recieve calls to prevent congestion
 			
-			istream.read(output.speakerData,0,output.speakerData.length);
-			output.write(numBytesRead);
+			// for (each of our clients)
+				dp.setAddress(clientIP);
+				socket.send(dp);
+
+			// 2) Receive data from anyone and output it.
+			byte[] responseBuf = new byte[MAXBUFSIZE];
+			dp.setData(responseBuf);
+			
+			socket.setSoTimeout(100);
+			try{
+				socket.receive(dp);
+			}catch(SocketTimeoutException e){
+				System.out.println("Didn't receive anything");
+			}
+			
+			output.write(dp.getData(), 0, dp.getLength());
 			
 		}
-	}
-	
-	
 
+//		input.stopMic();
+//		output.stopSpeakers();
+	}
 }

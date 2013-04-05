@@ -49,7 +49,7 @@ public class DataIn {
 	}
 
 	// Returns the number of valid bytes in the buffer
-	public int getByteRead(){
+	public int getBytesRead(){
 		return lastNumBytesRead;
 	}
 	
