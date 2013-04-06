@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
@@ -17,20 +21,26 @@ import javax.sound.sampled.TargetDataLine;
  *
  */
 
-public class DataIn {
+public class DataInThread implements Runnable{
+	Thread inputThread;
 	private TargetDataLine microphone;
 	private int lastNumBytesRead;
 	private byte[] micData;
+	private DatagramSocket dSocket;
+	
+	private static final int MAXBUFSIZE = 1024;
 	
 	// ctor
-	public DataIn(){
+	public DataInThread(DatagramSocket socket){
 		try {
-
+			dSocket = socket;
+			
 			// sampl Rate & bits, #Channels, signed?, bigEndian?
 			AudioFormat format = new AudioFormat(16000.0f, 16, 1, true, true);
 			microphone = AudioSystem.getTargetDataLine(format);
-			micData = new byte[microphone.getBufferSize()];
+			micData = new byte[MAXBUFSIZE];
 			microphone.open(format);
+			inputThread = new Thread(this);
 		} catch (LineUnavailableException e) {
 			// TODO is there anything else we should do if the microphone 
 			//		can't be connected?
@@ -41,29 +51,40 @@ public class DataIn {
 	}
 	
 	
-	// should there be a buffer for data that hasn't been sent in time?
-	
-	//numBytesRead = microphone.read(data, 0, data.length);
-	public int read(){
-		lastNumBytesRead = microphone.read(micData, 0, micData.length);
-		//System.out.println("\t num bytes read: " + lastNumBytesRead);
-		return lastNumBytesRead;
-	}
+	// Thread logic
+	public void run(){
+		while(true){
+			//micData = new byte[microphone.available()];
+			lastNumBytesRead = microphone.read(micData, 0, micData.length);
+			
+			//dp.setData(micData);
+			DatagramPacket dp = new DatagramPacket(
+					micData,
+					Math.min(MAXBUFSIZE, micData.length));
 
-	// Returns the number of valid bytes in the buffer
-	public int getBytesRead(){
-		return lastNumBytesRead;
+			try {
+				//System.out.println("input: " + buf[5]);
+				dp.setData(micData);
+				dSocket.send(dp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
-	public byte[] getNextArray(){
-		// gives the most recent byte[] to send out (if there is one);
-		return micData;
-	}
+	
+	
+	
+	// should there be a buffer for data that hasn't been sent in time?
+
 	
 	
 	// are there any checks we need to do before starting or stopping?
 	public void startMic(){
 		microphone.start();
+		inputThread.start();
 	}
 	
 	public void stopMic(){
