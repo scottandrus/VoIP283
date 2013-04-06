@@ -29,7 +29,7 @@ public class Client
 		// get all information from a config file
 		// config file contains: SERVER_IP, CLIENT_IP, (and what else?)
 		Properties prop = new Properties();
-		prop.load(new FileInputStream("config.properties"));
+		prop.load(new FileInputStream("src/config.properties"));
 		clientIP = InetAddress.getByName(prop.getProperty("CLIENT_IP"));
 		serverIP = InetAddress.getByName(prop.getProperty("SERVER_IP"));
 		
@@ -48,6 +48,8 @@ public class Client
 			int numBytesRead = input.read();
 			byte[] buf = input.getNextArray();
 
+			//System.out.println("input: " + buf[5]);
+			
 			DatagramPacket dp = new DatagramPacket(
 					buf,  
 					Math.min(MAXBUFSIZE, numBytesRead));
@@ -71,6 +73,8 @@ public class Client
 			}catch(SocketTimeoutException e){
 				System.out.println("Didn't receive anything");
 			}
+			
+			//System.out.println("output: " + responseBuf[5]);
 			
 			output.write(dp.getData(), 0, dp.getLength());
 			

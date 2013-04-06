@@ -30,6 +30,7 @@ public class DataIn {
 			AudioFormat format = new AudioFormat(16000.0f, 16, 1, true, true);
 			microphone = AudioSystem.getTargetDataLine(format);
 			micData = new byte[microphone.getBufferSize()];
+			microphone.open(format);
 		} catch (LineUnavailableException e) {
 			// TODO is there anything else we should do if the microphone 
 			//		can't be connected?
@@ -45,6 +46,7 @@ public class DataIn {
 	//numBytesRead = microphone.read(data, 0, data.length);
 	public int read(){
 		lastNumBytesRead = microphone.read(micData, 0, micData.length);
+		//System.out.println("\t num bytes read: " + lastNumBytesRead);
 		return lastNumBytesRead;
 	}
 

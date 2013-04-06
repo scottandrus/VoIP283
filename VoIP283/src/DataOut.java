@@ -19,6 +19,7 @@ public class DataOut {
 		try {
 			AudioFormat format = new AudioFormat(16000.0f, 16, 1, true, true);
 			speakers = AudioSystem.getSourceDataLine(format);
+			speakers.open(format);
 		} catch (LineUnavailableException e) {
 			// TODO Handle if the speakers are unavailable
 			e.printStackTrace();
