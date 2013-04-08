@@ -58,7 +58,7 @@ public class Client// implements ActionListener
 			String textIP = textField.getText();
 			serverIP = InetAddress.getByName(textIP);
 		} catch (UnknownHostException e) {
-			
+
 		}
    }
 
@@ -119,6 +119,8 @@ public class Client// implements ActionListener
       ClientDisplay listener = new ClientDisplay();
       JButton connectButton = new JButton("Connect");
       textField = new JTextField(20);
+      JLabel label1 = new JLabel("Friend's IP Address", JLabel.CENTER);
+
 
       // ButtonHandler listener = new ButtonHandler();
       connectButton.addActionListener(listener);
@@ -126,15 +128,19 @@ public class Client// implements ActionListener
 
       JPanel content = new JPanel();
       content.setLayout(new BorderLayout());
-      content.add(listener, BorderLayout.CENTER);
-      content.add(connectButton, BorderLayout.SOUTH);
-      content.add(textField, BorderLayout.NORTH);
+      content.add(listener);
+      content.add(label1, BorderLayout.PAGE_START);
+      content.add(textField, BorderLayout.CENTER);
+      content.add(connectButton, BorderLayout.PAGE_END);
+
+
 
       JFrame window = new JFrame("Lean VoIP");
       window.setContentPane(content);
       window.setSize(250,100);
       window.setLocation(100,100);
       window.setVisible(true);
+      window.setResizable(false);
       
 // 		JFrame gui = new JFrame("Lean VoIP");
 // 		/*
