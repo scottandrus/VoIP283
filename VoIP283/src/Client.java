@@ -29,6 +29,9 @@ public class Client// implements ActionListener
     // Client and Server InetAddress
 	private static InetAddress clientIP;
 	private static InetAddress serverIP;
+
+	// GUI Stuff
+	private static JTextField textField;
 	
 	
 	
@@ -39,17 +42,29 @@ public class Client// implements ActionListener
 		if (com.equals("Connect")) {
 			System.out.println("Found connecting button.");
 			try {
+				String textIP = textField.getText();
+				serverIP = InetAddress.getByName(textIP);
 				runVOIP();
-			} catch (Exception e) {
+			} catch (Exception excep) {
 				// do stuff
 			}
 		} else {
 			System.out.println("Couldn't find button.");
 		}
       }
-
     }
 
+   public static void setIPInfo() {
+	   	InetAddress ip;
+		  try {
+			ip = InetAddress.getLocalHost();
+			System.out.println("Current IP address : " + ip.getHostAddress());
+			clientIP = ip;
+	 
+		  } catch (UnknownHostException e) {
+		  	e.printStackTrace();
+		  }
+   }
    public static void readConfig() throws Exception {
    		// Get all information from a config file
 		// config file contains: SERVER_IP, CLIENT_IP
@@ -79,7 +94,8 @@ public class Client// implements ActionListener
 		setupGUI();
 		
 		try {
-			readConfig();
+			// readConfig();
+			setIPInfo();
 		} catch (Exception e) {
 			// do stuff
 		}
@@ -95,13 +111,17 @@ public class Client// implements ActionListener
 	
       ClientDisplay listener = new ClientDisplay();
       JButton connectButton = new JButton("Connect");
+      textField = new JTextField(20);
+
       // ButtonHandler listener = new ButtonHandler();
       connectButton.addActionListener(listener);
+      textField.addActionListener(listener);
 
       JPanel content = new JPanel();
       content.setLayout(new BorderLayout());
       content.add(listener, BorderLayout.CENTER);
       content.add(connectButton, BorderLayout.SOUTH);
+      content.add(textField, BorderLayout.NORTH);
 
       JFrame window = new JFrame("Lean VoIP");
       window.setContentPane(content);
@@ -122,6 +142,7 @@ public class Client// implements ActionListener
 // 		JButton startButton = new JButton("Start");//The JButton name.
 // 		//startButton.addActionListener(this);//Reads the action.
 // 		gui.add(startButton);//Add the button to the JFrame.
+
 	}
 
 }
