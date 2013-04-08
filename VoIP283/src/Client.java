@@ -32,32 +32,35 @@ public class Client// implements ActionListener
 	
 	
 	
-	private static class ClientDisplay extends JPanel {
-      public void paintComponent(Graphics g) {
-         super.paintComponent(g);
-         g.drawString("Press Connect to start Voice", 20, 30);
-      }
-    }
-   
-   private static class ButtonHandler implements ActionListener {
+	private static class ClientDisplay extends JPanel implements ActionListener {
+
       public void actionPerformed(ActionEvent e) {
-
-		// Called when button is pressed
+      	String com = e.getActionCommand();
+		if (com.equals("Connect")) {
+			System.out.println("Found connecting button.");
+			try {
+				runVOIP();
+			} catch (Exception e) {
+				// do stuff
+			}
+		} else {
+			System.out.println("Couldn't find button.");
+		}
       }
-   }
-   
 
-	public static void main(String[] args) throws Exception {
-		setupGUI();
-	
-		// Get all information from a config file
+    }
+
+   public static void readConfig() throws Exception {
+   		// Get all information from a config file
 		// config file contains: SERVER_IP, CLIENT_IP
 		Properties prop = new Properties();
 		prop.load(new FileInputStream("src/config.properties"));
 		clientIP = InetAddress.getByName(prop.getProperty("CLIENT_IP"));
 		serverIP = InetAddress.getByName(prop.getProperty("SERVER_IP"));
-		
-        // Create an outbound socket with the client IP to connect to
+   }
+   
+   public static void runVOIP() throws Exception {
+   	    // Create an outbound socket with the client IP to connect to
 		DatagramSocket outSocket = new DatagramSocket(PORT,clientIP);
 		
         // Create an inbound socket that will connect to us
@@ -70,6 +73,18 @@ public class Client// implements ActionListener
 		
 		output.startSpeakers();
 		input.startMic();
+   }
+
+	public static void main(String[] args) {
+		setupGUI();
+		
+		try {
+			readConfig();
+		} catch (Exception e) {
+			// do stuff
+		}
+		
+
         // Comments
 //		input.stopMic();
 //		output.stopSpeakers();
@@ -78,14 +93,14 @@ public class Client// implements ActionListener
 	public static void setupGUI() {
 		// Modified Swing code based on http://math.hws.edu/javanotes/c6/s1.html
 	
-      ClientDisplay displayPanel = new ClientDisplay();
+      ClientDisplay listener = new ClientDisplay();
       JButton connectButton = new JButton("Connect");
-      ButtonHandler listener = new ButtonHandler();
+      // ButtonHandler listener = new ButtonHandler();
       connectButton.addActionListener(listener);
 
       JPanel content = new JPanel();
       content.setLayout(new BorderLayout());
-      content.add(displayPanel, BorderLayout.CENTER);
+      content.add(listener, BorderLayout.CENTER);
       content.add(connectButton, BorderLayout.SOUTH);
 
       JFrame window = new JFrame("Lean VoIP");
