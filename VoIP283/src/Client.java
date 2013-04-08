@@ -42,8 +42,7 @@ public class Client// implements ActionListener
 		if (com.equals("Connect")) {
 			System.out.println("Found connecting button.");
 			try {
-				String textIP = textField.getText();
-				serverIP = InetAddress.getByName(textIP);
+				setServerIPInfo();
 				runVOIP();
 			} catch (Exception excep) {
 				// do stuff
@@ -54,7 +53,16 @@ public class Client// implements ActionListener
       }
     }
 
-   public static void setIPInfo() {
+   public static void setServerIPInfo() {
+   		try {
+			String textIP = textField.getText();
+			serverIP = InetAddress.getByName(textIP);
+		} catch (UnknownHostException e) {
+			
+		}
+   }
+
+   public static void setClientIPInfo() {
 	   	InetAddress ip;
 		  try {
 			ip = InetAddress.getLocalHost();
@@ -94,8 +102,7 @@ public class Client// implements ActionListener
 		setupGUI();
 		
 		try {
-			// readConfig();
-			setIPInfo();
+			setClientIPInfo();
 		} catch (Exception e) {
 			// do stuff
 		}
