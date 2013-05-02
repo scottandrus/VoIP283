@@ -97,10 +97,6 @@ public class Client// implements ActionListener
 		} catch (Exception e) {
 			// do stuff
 		}
-		
-        // Comments
-//		input.stopMic();
-//		output.stopSpeakers();
 	}
 
 	public static void setupGUI() {
